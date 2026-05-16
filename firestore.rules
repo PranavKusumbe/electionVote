@@ -1,0 +1,51 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Users Collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasAll(['uid', 'email'])
+        && request.resource.data.uid == request.auth.uid;
+      allow update: if isOwner(userId)
+        && request.resource.data.uid == resource.data.uid;
+    }
+
+    // Candidates (Public Read, Admin Write)
+    // For this app, we'll assume candidates are populated as seed data or via an admin.
+    match /candidates/{candidateId} {
+      allow read: if true;
+      allow write: if false; // Only via backend/console for now
+    }
+
+    // Timeline (Public Read)
+    match /timeline/{stepId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Deadlines (Public Read)
+    match /deadlines/{deadlineId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

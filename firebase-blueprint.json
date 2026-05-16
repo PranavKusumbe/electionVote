@@ -1,0 +1,70 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Candidate": {
+      "title": "Candidate",
+      "description": "Information about political candidates",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "party": { "type": "string" },
+        "platform": { "type": "string" },
+        "keyIssues": { "type": "array", "items": { "type": "string" } },
+        "imageUrl": { "type": "string" },
+        "website": { "type": "string" }
+      }
+    },
+    "ElectionStep": {
+      "title": "Election Step",
+      "description": "A step in the election timeline",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["upcoming", "active", "completed"] }
+      }
+    },
+    "RegistrationDeadline": {
+      "title": "Registration Deadline",
+      "description": "Deadline for voting registration by state/region",
+      "type": "object",
+      "properties": {
+        "region": { "type": "string" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "requirements": { "type": "string" },
+        "link": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "candidates/{candidateId}": {
+      "schema": "Candidate",
+      "description": "List of candidates"
+    },
+    "timeline/{stepId}": {
+      "schema": "ElectionStep",
+      "description": "Election timeline steps"
+    },
+    "deadlines/{deadlineId}": {
+      "schema": "RegistrationDeadline",
+      "description": "Voting registration deadlines"
+    }
+  }
+}
